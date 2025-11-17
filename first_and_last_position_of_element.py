@@ -1,20 +1,21 @@
 # https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
 
-# this first and last is not the first half and last half but its the first and last number of the consecutive intergers 
-# we are providing the (high = mid - 1) condition twice in row no. 18 and 21 because 18 number is for the consecutive numbers first part and second is for the normal binary search on entire list
+
+# Using the binary search to find the first and last position of the target element in the array. Created two methods, first is to find the first occurance of the target and second is to find the last occurance. Passing the result of first method to second method as an argument, becuase we got the first occurance from that index we can find the last occurance. 
+# Time Complexity O(log n)
 
 class Solution:
+    # method to find the first position of the element
     def searchRange(self, nums: list[int], target: int) -> list[int]:
         def binarySearchFirst(nums, target, low, high):
             while low <= high:
                 mid = (low + high) // 2
                 # when the mid is target element
                 if nums[mid] == target:
-                # this condition gives us the first position
-                # once we get the mid as a target check the previous is not a target or target is at zero position means there is no previous
-                    if nums[mid-1] != target or mid == 0:
+                # if the previous element of the mid is not a target or target is at zero position means we got the first occurance
+                    if mid == 0 or nums[mid-1] != target:
                         return mid
-                # but if the mid - 1 is also target element then change the high pointer and calculate the first from the previous
+                # but if the mid - 1 is also target element then change the high pointer to calculate the first position of the element
                     else:
                         high = mid -1
                 # search the target in the left half
@@ -24,29 +25,35 @@ class Solution:
                 else:
                     low = mid + 1
             return -1
-    
+        
+        # method to find the last position of the element
         def binarySearchLast(nums, target, low, high):
             while low <= high:
                 mid = (low + high) // 2
-
+                # when the mid is target element
                 if nums[mid] == target:
-                    # this condition gives us the last position
-                    # once we get the mid as a target check the next is not a target or target is at the last position means there is next
-                    if nums[mid + 1] != target or mid == len(nums)-1:
+                    # if the next element of the mid is not a target or target is at last position means we got the last occurance
+                    if  mid == len(nums)-1 or nums[mid + 1] != target:
                         return mid
                     else:
+                    # but if the mid + 1 is also target element then change the lower pointer to calculate the last position of the element
                         low = mid + 1
                 elif nums[mid] > target:
+                    # search the target in the left half
                     high = mid -1
                 else:
+                    # search the target in the right half
                     low = mid + 1
             return -1
 
+        # find the first position of the element by calling binarySearchFirst method and store into the variable 'first'
         first = binarySearchFirst(nums, target, 0 , len(nums)-1 )
+        # if we get the -1 output means target is not present
         if first == -1:
+            # exit the program
             return [-1, -1]
         else:
-            # first occurance of this function must be the last occurance of target so here we are provided the first as a low
+            # if the target is present in the list then pass it's first occurance index value as the 'first' argument in the binarySearchLast method 
             last = binarySearchLast(nums, target, first, len(nums)-1)
         return [first, last] 
 
